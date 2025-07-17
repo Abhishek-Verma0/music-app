@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId // Changes for MongoDB ID
+  email     String
+  provider  Provider
+  
+  streams Stream[]
+  upvotes Upvote[]
+}
+
+
+model Stream{
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId 
+  type    StreamType
+  active  Boolean  @default(true)
+  upvotes Upvote[]
+  userId  String @db.ObjectId
+  user  User  @relation(fields: [userId],references: [id])
+}
+
+model Upvote{
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId 
+    userId  String   @db.ObjectId
+    streamId String  @db.ObjectId
+    user    User  @relation(fields: [userId],references: [id])
+
+    stream Stream  @relation(fields: [streamId],references: [id])
+    @@unique([userId,streamId])
+}
+
+enum Provider{
+  Google
+}
+
+enum StreamType{
+  Spotify
+  Youtube
+}
