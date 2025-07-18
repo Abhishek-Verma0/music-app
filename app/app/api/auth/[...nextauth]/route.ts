@@ -1,7 +1,7 @@
 import { prismaClient } from "@/app/lib/db";
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
-// import { async } from '../../streams/route';
+
 const handler = NextAuth({
     // here write what to use can be google  login
     providers: [
@@ -14,11 +14,13 @@ const handler = NextAuth({
     ],
      callbacks: {
         async signIn(params) {
-             console.log(params)
+             if (!params.user.email) {
+                 return false;
+            }
              try {
                  await prismaClient.user.create({
                      data: {
-                         email: "",
+                         email: params.user.email ?? "",
                          provider : "Google"
                      }
                  })
