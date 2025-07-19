@@ -10,38 +10,41 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User{
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId // Changes for MongoDB ID
+  id        String  @id @default(uuid())
   email     String   @unique
   provider  Provider
   
-  streams Stream[]
-  upvotes Upvote[]
+  streams    Stream[]
+  upvotes    Upvote[]
 }
 
 
 model Stream{
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId 
+  id            String  @id @default(uuid())
   type          StreamType
   url           String
   extractedId   String
+  title         String  @default("")
+  smallImg      String  @default("")
+  bigImg        String  @default("")
   active        Boolean  @default(true)
   upvotes       Upvote[]
-  userId        String @db.ObjectId
+  userId        String 
   user          User  @relation(fields: [userId],references:   [id])
 }
 
 model Upvote{
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId 
-    userId  String   @db.ObjectId
-    streamId String  @db.ObjectId
-    user    User  @relation(fields: [userId],references: [id])
+  id          String  @id @default(uuid()) 
+  userId      String   
+  streamId    String  
+  user        User  @relation(fields: [userId],references: [id])
 
-    stream Stream  @relation(fields: [streamId],references: [id])
+  stream      Stream  @relation(fields: [streamId],references: [id])
     @@unique([userId,streamId])
 }
 
