@@ -8,7 +8,8 @@ export async function GET(req: NextRequest){
         //  TODO: can get rid of DB calls here 
         const user = await prismaClient.user.findFirst({
             where: {
-                email: session?.user?.email ?? ""
+                email: session?.user?.email ?? "",
+                
             }
         });
     
@@ -21,19 +22,28 @@ export async function GET(req: NextRequest){
     }
     const streams = await prismaClient.stream.findMany({
         where: {
-            userId: user.id ?? ""
+            userId: user.id
         },
         include: {
             _count: {
                 select: {
                     upvotes: true
                 }
+            },
+            upvotes: {
+                where:{
+
+                    userId:user.id
+                }
             }
         }
     })
 
     return NextResponse.json({
-        streams: streams.map(({_count, ...rest}) => ({...rest, upvotes: _count.upvotes}))
+        streams: streams.map(({ _count, ...rest }) => ({
+            ...rest, upvotesCount: _count.upvotes,
+            haveUpvoted: rest.upvotes.length ? true : false
+        }))
     })
     
     
