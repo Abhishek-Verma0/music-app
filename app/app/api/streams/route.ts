@@ -45,10 +45,11 @@ export async function POST(req: NextRequest) {
                 status: 411
             })
         }
-
+        console.log(data)
         const stream = await prismaClient.stream.create({
             data: {
                 userId: data.creatorId,
+                addedById: data.creatorId,
                 url: data.url,
                 extractedId,
                 type: "Youtube",

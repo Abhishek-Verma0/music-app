@@ -45,7 +45,7 @@ export default function StreamView({
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(false);
   const [playNextLoader, setPlayNextLoader] = useState(false);
-  const videoPlayerRef = useRef<HTMLDivElement>();
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
 
   async function refreshStreams() {
     const res = await fetch(`/api/streams/?creatorId=${creatorId}`, {
