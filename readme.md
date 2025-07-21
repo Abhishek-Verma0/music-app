@@ -10,7 +10,7 @@ A web application where users can submit **YouTube URLs** to add songs to a shar
 - 🧑‍🤝‍🧑 **Multi-user Support** — Built with session-based user authentication.
 
 - 📱 **Mobile Responsive** — Works on phones, tablets, and desktops.
-                      **More Feautures To be added**
+-  **More Feautures To be added**
 
 
 
