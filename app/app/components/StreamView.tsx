@@ -93,20 +93,42 @@ export default function StreamView({
     }
   }, [currentVideo, videoPlayerRef])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const res = await fetch("/api/streams/", {
-        method: "POST",
-        body: JSON.stringify({
-            creatorId,
-            url: inputLink
-        })
-    });
-    setQueue([...queue, await res.json()])
-    setLoading(false);
-    setInputLink('')
-  }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inputLink) return;
+        setLoading(true);
+        try {
+            const res = await fetch("/api/streams/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    creatorId,
+                    url: inputLink
+                })
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                toast.error(errorData.error || "Failed to add video");
+        
+          
+            }
+            else {
+          
+                setQueue([...queue, await res.json()])
+                
+                setInputLink('')
+                toast.success("Song added to queue!");
+            }
+        } catch (e) {
+            console.error("Falied to sumbit video: ", e);
+            toast.error("An unexpected error occured")
+        }
+        finally {
+            setLoading(false)
+        }
+    }
 
   const handleVote = (id: string, isUpvote: boolean) => {
     setQueue(queue.map(video => 
@@ -145,7 +167,7 @@ export default function StreamView({
   }
 
   const handleShare = () => {
-    const shareableLink = `${window.location.hostname}/creator/${creatorId}`
+    const shareableLink = `${window.location.origin}/creator/${creatorId}`
     navigator.clipboard.writeText(shareableLink).then(() => {
       toast.success('Link copied to clipboard!', {
         position: "top-right",
@@ -171,7 +193,7 @@ export default function StreamView({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[rgb(10,10,10)] text-gray-200">
+    <div className="flex  min-h-screen flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         <Appbar />
         <div className='flex justify-center'>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-5 w-screen max-w-screen-xl pt-8">
